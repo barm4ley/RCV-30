@@ -1,0 +1,35 @@
+#!/bin/bash
+
+GPIO_NUM=$1
+OP_TYPE=$2
+GPIO_LEVEL=$3
+
+DIRECTION=
+
+if [ "$OP_TYPE" == "r" ]; then
+    DIRECTION=in
+else
+    DIRECTION=out
+fi
+
+
+
+GPIO_EXPORT_FILE=/sys/class/gpio/export
+GPIO_UNEXPORT_FILE=/sys/class/gpio/unexport
+GPIO_DIRECTORY=/sys/class/gpio/gpio$GPIO_NUM
+GPIO_DIRECTION_FILE=$GPIO_DIRECTORY/direction
+GPIO_VALUE_FILE=$GPIO_DIRECTORY/value
+
+if [ ! -f $GPIO_VALUE_FILE ]; then
+    echo $GPIO_NUM > $GPIO_EXPORT_FILE
+fi
+
+echo $DIRECTION > $GPIO_DIRECTION_FILE
+
+if [ "$OP_TYPE" == "r" ]; then
+    cat $GPIO_VALUE_FILE > /dev/console
+else
+    echo $GPIO_LEVEL > $GPIO_VALUE_FILE
+fi
+
+#echo $GPIO_NUM > $GPIO_UNEXPORT_FILE
